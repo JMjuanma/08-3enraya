@@ -1,4 +1,3 @@
-# AgenteRemoto.py
 import socket
 import json
 from AgenteIA.AgenteJugador import AgenteJugador, ElEstado
@@ -6,10 +5,6 @@ from protocolo import encode, decode, dict_a_tablero
 
 
 class AgenteRemoto(AgenteJugador):
-    """
-    Agente que delega la decisión a un 'agente_local' (humano o IA)
-    pero envía/recibe el estado por socket con el servidor.
-    """
     def __init__(self, sock, agente_local, n=3):
         AgenteJugador.__init__(self)
         self.sock = sock
@@ -33,11 +28,10 @@ class AgenteRemoto(AgenteJugador):
         return estado.movidas
 
     def getResultado(self, estado, m):
-        # El cliente NO aplica la jugada, solo la envía. El servidor la valida.
         return estado
 
     def testTerminal(self, estado):
-        return False  # el servidor manda el fin
+        return False
 
     def mostrar(self, estado):
         tablero = estado.tablero

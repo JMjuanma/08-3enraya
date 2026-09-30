@@ -11,12 +11,10 @@ class AgenteTresEnRaya(AgenteJugador):
         self.v = n
         self.k = n
         self.tecnica = "fun_eval"
-        # Precalculamos ventanas y pesos posicionales para máxima velocidad
         self.ventanas = self._generar_ventanas()
         self.mapa_posicional = self._generar_mapa_posicional()
 
     def jugadas(self, estado):
-        # Move Ordering: Priorizar casillas centrales y cercanas al juego para podar más rápido
         centro = (self.n + 1) / 2.0
         return sorted(
             estado.movidas,
@@ -83,22 +81,18 @@ class AgenteTresEnRaya(AgenteJugador):
         ventanas = []
         n, k = self.n, self.k
 
-        # Filas horizontales
         for x in range(1, n + 1):
             for y in range(1, n - k + 2):
                 ventanas.append(tuple((x, y + i) for i in range(k)))
 
-        # Columnas verticales
         for y in range(1, n + 1):
             for x in range(1, n - k + 2):
                 ventanas.append(tuple((x + i, y) for i in range(k)))
 
-        # Diagonal principal (\)
         for x in range(1, n - k + 2):
             for y in range(1, n - k + 2):
                 ventanas.append(tuple((x + i, y + i) for i in range(k)))
 
-        # Diagonal secundaria (/)
         for x in range(1, n - k + 2):
             for y in range(k, n + 1):
                 ventanas.append(tuple((x + i, y - i) for i in range(k)))
@@ -115,12 +109,11 @@ class AgenteTresEnRaya(AgenteJugador):
                     mapa[(x, y)] = 6 if dist == 0 else (3 if dist <= 1 else 1)
                 elif self.n == 4:
                     mapa[(x, y)] = 4 if dist <= 0.5 else 1
-                else:  # n == 3
+                else:
                     mapa[(x, y)] = 4 if dist == 0 else 1
         return mapa
 
     def _contar_racha_maxima(self, fichas, simbolo):
-        """Calcula la longitud máxima de fichas consecutivas dentro de la ventana."""
         max_racha = 0
         racha_actual = 0
         for f in fichas:
@@ -149,17 +142,14 @@ class AgenteTresEnRaya(AgenteJugador):
             count_jugador = fichas.count(jugador)
             count_oponente = fichas.count(oponente)
 
-            # Si ambos tienen fichas en la ventana, queda bloqueada
             if count_jugador > 0 and count_oponente > 0:
                 continue
 
-            # Ventana favorable al jugador (ataque)
             if count_jugador > 0 and count_oponente == 0:
                 racha = self._contar_racha_maxima(fichas, jugador)
                 if count_jugador == k:
                     puntaje += 100000
                 elif count_jugador == k - 1:
-                    # Racha contigua de k-1 es más amenazante
                     puntaje += 12000 if racha == k - 1 else 8000
                 elif count_jugador == k - 2 and k >= 4:
                     puntaje += 700 if racha == k - 2 else 400
@@ -170,13 +160,11 @@ class AgenteTresEnRaya(AgenteJugador):
                 elif count_jugador == 1:
                     puntaje += 2
 
-            # Ventana favorable al oponente (defensa con mayor peso asimétrico)
             elif count_oponente > 0 and count_jugador == 0:
                 racha = self._contar_racha_maxima(fichas, oponente)
                 if count_oponente == k:
                     puntaje -= 100000
                 elif count_oponente == k - 1:
-                    # Penalización severa para forzar bloqueo inmediato
                     puntaje -= 18000 if racha == k - 1 else 13000
                 elif count_oponente == k - 2 and k >= 4:
                     puntaje -= 1000 if racha == k - 2 else 600
@@ -187,7 +175,6 @@ class AgenteTresEnRaya(AgenteJugador):
                 elif count_oponente == 1:
                     puntaje -= 3
 
-        # Control posicional (centro) precalculado
         for pos, ficha in tablero.items():
             bonus = self.mapa_posicional.get(pos, 0)
             if ficha == jugador:

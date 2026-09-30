@@ -1,11 +1,3 @@
-# **********************************************************
-# * Clase: Agente buscador                                 *
-# * Autor: Victor Estevez                                  *
-# * Version: v2023.03.29                                   *
-# * Descripcion: Implementacion de algoritmos de busqueda  *
-# *              sin informacion y con informacion         *
-# **********************************************************
-
 from AgenteIA.Agente import Agente
 from copy import deepcopy
 import time

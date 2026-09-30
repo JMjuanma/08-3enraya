@@ -1,4 +1,3 @@
-# ClienteTresEnRaya.py
 import socket
 import sys
 from AgenteIA.AgenteJugador import ElEstado
@@ -12,8 +11,8 @@ class ClienteTresEnRaya:
         self.host = host
         self.puerto = puerto
         self.n = n
-        self.modo = modo          # "humano" o "ia"
-        self.tecnica = tecnica    # "minimax", "podaalfabeta", "fun_eval"
+        self.modo = modo
+        self.tecnica = tecnica
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.buffer = ""
         self.mi_jugador = None
@@ -66,7 +65,6 @@ class ClienteTresEnRaya:
     def _decidir_jugada(self, estado):
         if self.modo == "humano":
             return self._pedir_jugada_humano(estado.movidas)
-        # IA: usamos el agente local para calcular la mejor jugada
         self.agente.estado = estado
         self.agente.programa()
         accion = self.agente.get_acciones()
@@ -111,7 +109,6 @@ class ClienteTresEnRaya:
 
 
 if __name__ == "__main__":
-    # Uso: python ClienteTresEnRaya.py <host> <puerto> <humano|ia> [tecnica]
     host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
     puerto = int(sys.argv[2]) if len(sys.argv) > 2 else 5000
     modo = sys.argv[3] if len(sys.argv) > 3 else "minimax"

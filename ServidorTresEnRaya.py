@@ -1,4 +1,3 @@
-# ServidorTresEnRaya.py
 import socket
 import sys
 import threading
@@ -55,7 +54,6 @@ class ServidorTresEnRaya:
 
     def _jugar_con(self, conn_x, conn_o):
         estado = self._estado_inicial()
-        # Mensaje inicial: a X le toca
         self._enviar(conn_x, {"tipo": "turno", "jugador": "X",
                               "tablero": tablero_a_dict(estado.tablero),
                               "movidas": estado.movidas})
@@ -64,7 +62,7 @@ class ServidorTresEnRaya:
                               "movidas": estado.movidas})
 
         conexiones = {'X': conn_x, 'O': conn_o}
-        buffers = {'X': [""], 'O': [""]}
+        buffers = {'X': [""] , 'O': [""]}
         ganador = None
 
         while True:
@@ -80,7 +78,6 @@ class ServidorTresEnRaya:
                              {"tipo": "error", "motivo": "movida inválida"})
                 continue
 
-            # Aplicar jugada
             nuevo_tablero = estado.tablero.copy()
             nuevo_tablero[m] = actual
             nuevas_movidas = list(estado.movidas)
@@ -94,7 +91,6 @@ class ServidorTresEnRaya:
                 movidas=nuevas_movidas,
             )
 
-            # Difundir estado
             for j, conn in conexiones.items():
                 self._enviar(conn, {
                     "tipo": "estado",
@@ -104,7 +100,6 @@ class ServidorTresEnRaya:
                     "utilidad": estado.get_utilidad,
                 })
 
-            # Fin de partida
             if util != 0:
                 ganador = actual
                 break
@@ -112,7 +107,6 @@ class ServidorTresEnRaya:
                 ganador = "empate"
                 break
 
-        # Notificar fin
         for j, conn in conexiones.items():
             self._enviar(conn, {"tipo": "fin", "ganador": ganador})
 

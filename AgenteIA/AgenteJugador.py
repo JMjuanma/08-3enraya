@@ -1,11 +1,3 @@
-#################################################################
-# Nombre      : Entorno                                         #
-# Version     : 0.05.03.2017                                    #
-# Autor       : Victor Estevez                                  #
-# Descripcion : Clase Agentes con Adversarios                   #
-##################################################################
-
-
 from AgenteIA.Agente import Agente
 from collections import namedtuple
 import time
@@ -156,7 +148,7 @@ class AgenteJugador(Agente):
         else:
             suma_valores = 0
             jugadas = self.jugadas(estado)
-            probabilidad = 1 / len(jugadas)  # Supone que cada movimiento es igualmente probable
+            probabilidad = 1 / len(jugadas)
 
             for movida in jugadas:
                 nuevo_estado = self.getResultado(estado, movida)
@@ -169,7 +161,7 @@ class AgenteJugador(Agente):
         if self.testTerminal(estado) or profundidad == self.max_profundidad:
             return self.funcion_evaluacion(estado)
 
-        if es_turno_jugador:  # Nodo de Maximización (turno del jugador)
+        if es_turno_jugador:
             max_valor = -float('inf')
             for movida in self.jugadas(estado):
                 nuevo_estado = self.getResultado(estado, movida)
@@ -177,7 +169,7 @@ class AgenteJugador(Agente):
                 max_valor = max(max_valor, valor)
             return max_valor
 
-        else:  # Nodo de Minimización o Expectación (turno del oponente o azar)
+        else:
             if self.es_nodo_minimizacion(estado):
                 min_valor = float('inf')
                 for movida in self.jugadas(estado):
@@ -188,7 +180,7 @@ class AgenteJugador(Agente):
             else:
                 suma_valores = 0
                 jugadas = self.jugadas(estado)
-                probabilidad = 1 / len(jugadas)  # Supone que cada movimiento es igualmente probable
+                probabilidad = 1 / len(jugadas)
 
                 for movida in jugadas:
                     nuevo_estado = self.getResultado(estado, movida)
