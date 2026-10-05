@@ -7,7 +7,7 @@ from protocolo import encode, decode, dict_a_tablero
 
 
 class ClienteTresEnRaya:
-    def __init__(self, host, puerto, modo="humano", tecnica="minimax", n=3):
+    def __init__(self, host, puerto, modo="humano", tecnica="fun_eval", n=3):
         self.host = host
         self.puerto = puerto
         self.n = n
@@ -80,13 +80,24 @@ class ClienteTresEnRaya:
                 tipo = msg["tipo"]
 
                 if tipo in ("turno", "espera", "estado"):
-                    self.mi_jugador = self.mi_jugador or msg.get("jugador")
+                    if tipo in ("turno", "espera") and not self.mi_jugador:
+                        self.mi_jugador = msg.get("jugador")
                     estado = self._construir_estado(msg)
+
+                    coords = list(estado.tablero.keys()) + list(estado.movidas)
+                    if coords:
+                        max_dim = max(max(x for x, y in coords), max(y for x, y in coords))
+                        if max_dim != self.n:
+                            self.n = max_dim
+                            if self.modo != "humano":
+                                self.agente = AgenteTresEnRaya(n=self.n)
+                                self.agente.tecnica = self.tecnica
+
                     print(f"\n--- Tablero (tú eres '{self.mi_jugador}') ---")
                     self._mostrar_tablero(estado.tablero)
                     print(f"Turno de: {estado.jugador}")
 
-                    if tipo == "turno":
+                    if tipo == "turno" or (tipo == "estado" and estado.jugador == self.mi_jugador and estado.get_utilidad == 0 and estado.movidas):
                         accion = self._decidir_jugada(estado)
                         print(f"Envías: {accion}")
                         self._send_msg({"tipo": "jugada", "accion": accion})
@@ -111,6 +122,6 @@ class ClienteTresEnRaya:
 if __name__ == "__main__":
     host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
     puerto = int(sys.argv[2]) if len(sys.argv) > 2 else 5000
-    modo = sys.argv[3] if len(sys.argv) > 3 else "minimax"
-    tecnica = sys.argv[4] if len(sys.argv) > 4 else "minimax"
+    modo = sys.argv[3] if len(sys.argv) > 3 else "ia"
+    tecnica = sys.argv[4] if len(sys.argv) > 4 else "fun_eval"
     ClienteTresEnRaya(host, puerto, modo, tecnica).iniciar()
